@@ -1,0 +1,19 @@
+# Dockerfile to create a container with SAPS Dispatcher
+FROM ubuntu:16.04
+LABEL maintainer="Amanda Calatrava <amcaar@i3m.upv.es>"
+LABEL version="1.0"
+LABEL description="Container image to run the Dispatcher component of SAPS service."
+
+# Ensure system is up to date with mandatory postgresql package installed
+RUN apt-get update && apt-get install --no-install-recommends -y openjdk-8-jdk maven git python-swiftclient python-gdal python-shapely && \
+     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && rm -rf ~/.cache/
+
+# Install saps-engine from its repository
+RUN cd /var/tmp && git clone https://github.com/ufcg-lsd/saps-engine --branch=develop && cd /var/tmp/saps-engine && \
+     mvn install -Dmaven.test.skip=true
+
+# Copy dispatcher.conf with correct minimum values
+COPY dispatcher.conf /var/tmp/saps-engine/config/dispatcher.conf
+
+# Start Dispatcher service
+CMD /var/tmp/saps-engine/bin/start-dispatcher
