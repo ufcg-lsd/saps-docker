@@ -1,0 +1,37 @@
+# Dockerfile to create a container with SAPS Archiver
+FROM ubuntu:16.04
+LABEL maintainer="Amanda Calatrava <amcaar@i3m.upv.es>"
+LABEL version="1.0"
+LABEL description="Container image to run the Archiver component of SAPS service."
+
+# Ensure system is up to date with mandatory postgresql package installed
+# TODO: Install NFS? nfs-kernel-server
+RUN apt-get update && apt-get install --no-install-recommends -y openjdk-8-jdk maven git python-swiftclient && \
+     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && rm -rf ~/.cache/
+
+# Install fogbow-mono-manager from its repository
+RUN cd /tmp && git clone https://github.com/fogbow/fogbow-mono-manager.git --branch=develop && cd /tmp/fogbow-mono-manager && \
+     mvn install -Dmaven.test.skip=true
+
+# Install fogbow-mono-cli from its repository
+RUN cd /tmp && git clone https://github.com/fogbow/fogbow-mono-cli.git --branch=develop && cd /tmp/fogbow-mono-cli && \
+     mvn install -Dmaven.test.skip=true
+
+# Install saps-engine from its repository
+RUN cd /var/tmp && git clone https://github.com/ufcg-lsd/saps-engine --branch=develop && cd /var/tmp/saps-engine && \
+     mvn install -Dmaven.test.skip=true
+
+# Configure NFS (as sudo)
+#	$ mkdir -p /home/ubuntu/nfsaps/
+#	$ echo "/home/ubuntu/nfsaps/ *(rw,insecure,no_subtree_check,async,no_root_squash)" >> /etc/exports
+#	$ service nfs-kernel-server restart
+
+# Copy archiver.conf with correct minimum values
+COPY archiver.conf /var/tmp/saps-engine/config/archiver.conf
+
+# Configure Log4j
+COPY log4j.properties /var/tmp/saps-engine/config/log4j.properties
+RUN touch /var/tmp/saps-engine/logs/log4j.log
+
+# Start Archiver service
+CMD /var/tmp/saps-engine/bin/start-archiver
