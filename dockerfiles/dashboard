@@ -1,0 +1,21 @@
+# Dockerfile to create a container with SAPS Dashboard
+FROM ubuntu:16.04
+LABEL maintainer="Amanda Calatrava <amcaar@i3m.upv.es>"
+LABEL version="1.0"
+LABEL description="Container image to run the Dashboard component of SAPS service."
+EXPOSE 8080
+
+# Ensure system is up to date with mandatory packages installed
+RUN apt-get update && apt-get install --no-install-recommends -y curl && \
+     curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash - && \
+     apt-get install --no-install-recommends -y nodejs && \
+     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && rm -rf ~/.cache/
+
+# Install saps-dashboard from its repository
+RUN cd /var/tmp && git clone https://github.com/ufcg-lsd/saps-dashboard --branch=master && cd /var/tmp/saps-dashboard && \
+     npm install
+
+#Configure files
+
+# Start Dashboard service
+CMD /var/tmp/saps-engine/bin/start-dashboard
