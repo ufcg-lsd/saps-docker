@@ -16,6 +16,7 @@ RUN cd /var/tmp && git clone https://github.com/ufcg-lsd/saps-dashboard --branch
      npm install
 
 #Configure files
+COPY backend.config /var/tmp/saps-dashboard/backend.config
 
 # Start Dashboard service
-CMD /var/tmp/saps-engine/bin/start-dashboard
+CMD /var/tmp/saps-dashboard/bin/start-dashboard
