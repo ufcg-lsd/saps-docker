@@ -8,10 +8,18 @@ spec:
   containers:
   - name: archiver
     image: ufcgsaps/archiver
+    volumeMounts:
+    - name: archiverconf-volume
+      mountPath: /archiver
+  volumes:
+  - name: archiverconf-volume
+    configMap: 
+      name: archiver-conf
 
 
 
-    volumes:
-      - ./config/archiver.conf:/archiver/archiver.conf
-      - ./config/log4j.properties:/archiver/log4j.properties
-      - /nfs:/archiver/nfs
+    #volumes:
+    #  - ./config/archiver.conf:/archiver/archiver.conf
+    #  - ./config/log4j.properties:/archiver/log4j.properties
+    #  - /nfs:/archiver/nfs
+
