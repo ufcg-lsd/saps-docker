@@ -27,6 +27,11 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
+  labels:
+     app.kubernetes.io/name: saps-catalog
+     app.kubernetes.io/version: "10"
+     app.kubernetes.io/component: postgres-database
+     app.kubernetes.io/part-of: saps
   name: postgres-demo
 spec:
   serviceName: "postgres"
