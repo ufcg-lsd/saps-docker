@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: saps-archiver
+  labels:
+    app: saps-archiver
+spec:
+  containers:
+  - name: archiver
+    image: ufcgsaps/archiver
+
+
+
+    volumes:
+      - ./config/archiver.conf:/archiver/archiver.conf
+      - ./config/log4j.properties:/archiver/log4j.properties
+      - /nfs:/archiver/nfs

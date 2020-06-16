@@ -1,22 +1,23 @@
-# Dockerfile to create a container with SAPS Dashboard
-FROM ubuntu:16.04
-LABEL maintainer="Amanda Calatrava <amcaar@i3m.upv.es>"
+FROM node:10
 LABEL version="1.0"
 LABEL description="Container image to run the Dashboard component of SAPS service."
-EXPOSE 10080
+LABEL maintainer="wesley.monte@ccc.ufcg.edu.br"
 
-# Ensure system is up to date with mandatory packages installed
-RUN apt-get update && apt-get install --no-install-recommends -y curl && \
-     curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash - && \
-     apt-get install --no-install-recommends -y nodejs && \
-     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && rm -rf ~/.cache/
+WORKDIR /dashboard
 
-# Install saps-dashboard from its repository
-RUN cd /var/tmp && git clone https://github.com/ufcg-lsd/saps-dashboard --branch=master && cd /var/tmp/saps-dashboard && \
-     npm install
+COPY package*.json ./
 
-#Configure files
-COPY backend.config /var/tmp/saps-dashboard/backend.config
+RUN npm install
 
-# Start Dashboard service
-CMD /var/tmp/saps-dashboard/bin/start-dashboard
+COPY . .
+
+RUN apt-get update && \
+      apt-get install -y nginx && \
+      npm install pm2 -g
+
+COPY ./nginx/default /etc/nginx/sites-available/default
+COPY ./context/dashboard/entrypoint.sh /
+
+EXPOSE 80
+
+ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]

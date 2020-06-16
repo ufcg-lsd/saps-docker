@@ -1,19 +1,28 @@
 # Dockerfile to create a container with SAPS Scheduler
-FROM ubuntu:16.04
-LABEL maintainer="Amanda Calatrava <amcaar@i3m.upv.es>"
+FROM maven:3.6.3-jdk-8 AS builder
+
+WORKDIR /app
+
+COPY pom.xml .
+COPY src  ./src
+RUN mvn -e -B clean install
+
+FROM openjdk:8
+
+LABEL maintainer="wesley.monte@ccc.ufcg.edu.br"
 LABEL version="1.0"
 LABEL description="Container image to run the Scheduler component of SAPS service."
 
-# Ensure system is up to date with mandatory packages installed
-RUN apt-get update && apt-get install --no-install-recommends -y openjdk-8-jdk maven git && \
-     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && rm -rf ~/.cache/
+ENV MAIN_CLASS="org.fogbowcloud.saps.engine.core.scheduler.SchedulerMain"
 
-# Install saps-engine from its repository
-RUN cd /var/tmp && git clone https://github.com/ufcg-lsd/saps-engine --branch=develop && cd /var/tmp/saps-engine && \
-     mvn install -Dmaven.test.skip=true
+# Create bind mounts for these entries
+ENV CONFIG_PATH="/scheduler/scheduler.conf"
+ENV LOG_PROPERTIES_PATH="/scheduler/log4j.properties"
 
-# Copy scheduler.conf with correct minimum values
-COPY scheduler.conf /var/tmp/saps-engine/config/scheduler.conf
+WORKDIR /scheduler
 
-# Start Scheduler service
-CMD /var/tmp/saps-engine/bin/start-scheduler
+COPY --from=builder /app/target/saps-engine-0.0.1-SNAPSHOT.jar scheduler.jar
+COPY --from=builder /app/target/lib lib/
+COPY ./resources resources/
+
+ENTRYPOINT java -Dlog4j.configuration=file:"${LOG_PROPERTIES_PATH}" -cp scheduler.jar:lib/* "${MAIN_CLASS}" "${CONFIG_PATH}"
