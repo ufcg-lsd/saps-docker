@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: saps-worker
+  labels:
+    app: saps-worker
+spec:
+  containers:
+  - name: worker
+    image: fogbow/worker
+    volumeMounts:
+    - name: workernfs-volume
+      mountPath: /nfs
+  volumes:
+  - name: workernfs-volume
+    emptyDir: {}
+#sudo mount -t nfs <nfs_server>:/archiver/nfs /nfs

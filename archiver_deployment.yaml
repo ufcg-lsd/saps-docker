@@ -53,9 +53,9 @@ spec:
   volumes:
   - name: archiverconf-volume
     configMap: 
-      name: archiver-conf
+      name: archiver-config
 ---
-#TODO: solve the NFS server deployment (maybe a pod + a service)
+#TODO: solve the NFS server deployment (maybe a pod + a service or directly in the VM)
 #volumes:
 #  - /nfs:/archiver/nfs
 

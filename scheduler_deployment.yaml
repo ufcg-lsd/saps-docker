@@ -1,0 +1,97 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: scheduler-config
+data:
+  scheduler.conf: |
+    datastore_url_prefix=jdbc:postgresql://
+    datastore_ip=<catalog_ip>
+    datastore_port=5432
+    datastore_name=saps
+    datastore_driver=org.postgresql.Driver
+    datastore_username=admin
+    datastore_password=admin
+    arrebol_base_url=http://<arrebol_IP>:8080
+    saps_execution_period_submissor=60
+    saps_execution_period_checker=30
+  log4j.properties: |
+    log4j.rootLogger=DEBUG, file, stdout
+    log4j.category.org.restlet=INFO
+    log4j.category.org.apache.http=INFO
+    log4j.appender.DatePattern='.'yyyy-MM-dd
+    log4j.appender.file=org.apache.log4j.DailyRollingFileAppender
+    log4j.appender.file.File=/var/tmp/saps-engine/logs/log4j.log
+    log4j.appender.file.layout=org.apache.log4j.PatternLayout
+    log4j.appender.file.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n
+    log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+    log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+    log4j.appender.stdout.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: executor-config
+data:
+  execution_script_tags.json: |
+    {
+        "processing":[
+          {
+            "name":"ufcg-sebal",
+            "docker_tag":"ufcg-sebal",
+            "docker_repository":"fogbow/worker"
+          },{
+            "name":"sebkc-sebal",
+            "docker_tag":"sebkc-sebal",
+            "docker_repository":"fogbow/worker"
+          },{
+            "name":"sebkc-tseb",
+            "docker_tag":"sebkc-tseb",
+            "docker_repository":"fogbow/worker"
+          }
+        ],
+        "preprocessing":[
+          {
+            "name":"default",
+            "docker_tag":"default",
+            "docker_repository":"fogbow/preprocessor"
+          },{
+            "name":"legacy",
+            "docker_tag":"legacy",
+            "docker_repository":"fogbow/preprocessor"
+          }
+        ],
+        "inputdownloading":[
+          {
+            "name":"usgsapis",
+            "docker_tag":"usgsapis",
+            "docker_repository":"fogbow/inputdownloader"
+          },{
+            "name":"googleapis",
+            "docker_tag":"googleapis",
+            "docker_repository":"fogbow/inputdownloader"
+          }
+        ]
+    }
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: saps-scheduler
+  labels:
+    app: saps-scheduler
+spec:
+  containers:
+  - name: scheduler
+    image: ufcgsaps/scheduler
+    volumeMounts:
+    - name: schedulerconf-volume
+      mountPath: /scheduler
+    - name: executorconf-volume
+      mountPath: /scheduler/resources
+  volumes:
+  - name: schedulerconf-volume
+    configMap: 
+      name: scheduler-config
+  - name: executorconf-volume
+    configMap: 
+      name: executor-config
