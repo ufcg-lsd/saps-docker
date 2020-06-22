@@ -38,6 +38,17 @@ data:
     log4j.appender.stdout.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n
 ---
 apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nfs-saps
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 100Mi
+---
+apiVersion: v1
 kind: Pod
 metadata:
   name: saps-archiver
@@ -50,12 +61,13 @@ spec:
     volumeMounts:
     - name: archiverconf-volume
       mountPath: /archiver
+    - name: nfs
+      mountPath: "/archiver/nfs"
   volumes:
   - name: archiverconf-volume
     configMap: 
       name: archiver-config
----
-#TODO: solve the NFS server deployment (maybe a pod + a service or directly in the VM)
-#volumes:
-#  - /nfs:/archiver/nfs
+  - name: nfs
+    persistentVolumeClaim:
+      claimName: nfs-saps
 

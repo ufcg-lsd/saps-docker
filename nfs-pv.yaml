@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs
+spec:
+  capacity:
+    storage: 1Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  #persistentVolumeReclaimPolicy: Recycle
+  #storageClassName: slow
+  #mountOptions:
+  #  - hard
+  #  - nfsvers=4.1
+  nfs:
+    server: 158.42.105.200
+      #TODO: consider to deploy NFS server as a pod + service and use DNS: nfs-server.default.svc.cluster.local
+    path: /nfs

@@ -1,0 +1,27 @@
+# https://matthewpalmer.net/kubernetes-app-developer/articles/kubernetes-volumes-example-nfs-persistent-volume.html
+# https://medium.com/@aronasorman/creating-an-nfs-server-within-kubernetes-e6d4d542bbb9
+apiVersion: v1beta1
+kind: Pod
+labels:
+  name: nfs-server
+id: nfs-server
+desiredState:
+  manifest:
+    version: v1beta1
+    id: nfs-server
+    containers:
+      - name: nfs-server
+        image: jsafrane/nfs-data
+        privileged: true
+        ports:
+          - name: nfs
+            containerPort: 2049
+            protocol: tcp
+---
+id: nfs-server
+kind: Service
+apiVersion: v1beta1
+port: 2049
+protocol: tcp
+selector:
+  name: nfs-server
