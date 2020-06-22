@@ -47,6 +47,7 @@ spec:
   selector:
     matchLabels:
       name: "nfs"
+  storageClassName: nfs
   resources:
     requests:
       storage: 100Mi
