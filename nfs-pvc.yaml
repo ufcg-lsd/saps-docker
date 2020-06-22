@@ -5,7 +5,10 @@ metadata:
 spec:
   accessModes:
     - ReadWriteMany
-  #storageClassName: ""
+  #storageClassName: local-storage
+  selector:
+    matchLabels:
+      name: "nfs"
   resources:
     requests:
       storage: 100Mi

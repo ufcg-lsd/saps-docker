@@ -44,6 +44,9 @@ metadata:
 spec:
   accessModes:
     - ReadWriteMany
+  selector:
+    matchLabels:
+      name: "nfs"
   resources:
     requests:
       storage: 100Mi
@@ -70,4 +73,3 @@ spec:
   - name: nfs-archiver
     persistentVolumeClaim:
       claimName: nfs-saps-archiver
-

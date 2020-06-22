@@ -97,6 +97,9 @@ metadata:
 spec:
   accessModes:
     - ReadWriteMany
+  selector:
+    matchLabels:
+      name: "nfs"
   resources:
     requests:
       storage: 100Mi
@@ -130,7 +133,6 @@ spec:
   - name: nfs-dispatcher
     persistentVolumeClaim:
       claimName: nfs-saps-dispatcher
-# Missing the part of NFS:  /nfs:/dispatcher/nfs
 ---
 apiVersion: v1
 kind: Service
