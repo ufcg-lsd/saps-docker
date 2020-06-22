@@ -14,6 +14,6 @@ spec:
   #  - hard
   #  - nfsvers=4.1
   nfs:
-    server: 158.42.105.200
+    server: 127.0.0.1
       #TODO: consider to deploy NFS server as a pod + service and use DNS: nfs-server.default.svc.cluster.local
     path: /nfs

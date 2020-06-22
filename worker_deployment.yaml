@@ -1,4 +1,15 @@
 apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nfs-saps-worker
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 100Mi
+---
+apiVersion: v1
 kind: Pod
 metadata:
   name: saps-worker
@@ -9,9 +20,11 @@ spec:
   - name: worker
     image: fogbow/worker
     volumeMounts:
-    - name: workernfs-volume
-      mountPath: /nfs
+    - name: nfs-worker
+      mountPath: "/nfs"
   volumes:
   - name: workernfs-volume
     emptyDir: {}
-#sudo mount -t nfs <nfs_server>:/archiver/nfs /nfs
+  - name: nfs-worker
+    persistentVolumeClaim:
+      claimName: nfs-saps-worker

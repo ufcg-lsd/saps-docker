@@ -40,7 +40,7 @@ data:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: nfs-saps
+  name: nfs-saps-archiver
 spec:
   accessModes:
     - ReadWriteMany
@@ -61,13 +61,13 @@ spec:
     volumeMounts:
     - name: archiverconf-volume
       mountPath: /archiver
-    - name: nfs
+    - name: nfs-archiver
       mountPath: "/archiver/nfs"
   volumes:
   - name: archiverconf-volume
     configMap: 
       name: archiver-config
-  - name: nfs
+  - name: nfs-archiver
     persistentVolumeClaim:
-      claimName: nfs-saps
+      claimName: nfs-saps-archiver
 
