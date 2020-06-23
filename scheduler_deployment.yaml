@@ -5,13 +5,13 @@ metadata:
 data:
   scheduler.conf: |
     datastore_url_prefix=jdbc:postgresql://
-    datastore_ip=<catalog_ip>
+    datastore_ip=saps-catalog.default.svc.cluster.local
     datastore_port=5432
     datastore_name=saps
     datastore_driver=org.postgresql.Driver
     datastore_username=admin
     datastore_password=admin
-    arrebol_base_url=http://<arrebol_IP>:8080
+    arrebol_base_url=http://saps-arrebol.default.svc.cluster.local:8080
     saps_execution_period_submissor=60
     saps_execution_period_checker=30
   log4j.properties: |

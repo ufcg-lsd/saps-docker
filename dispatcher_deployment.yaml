@@ -5,7 +5,7 @@ metadata:
 data:
   dispatcher.conf: |
     datastore_url_prefix=jdbc:postgresql://
-    datastore_ip=<catalog_ip>
+    datastore_ip=saps-catalog.default.svc.cluster.local
     datastore_port=5432
     datastore_name=saps
     datastore_driver=org.postgresql.Driver
@@ -13,20 +13,20 @@ data:
     datastore_password=admin
     permanent_storage_tasks_dir=archiver
     permanent_storage_debug_tasks_dir=trash
-    openstack_identity_service_api_url=https://horsemen.i3m.upv.es:5000
-    openstack_project_id=$project_id
-    openstack_user_id=$user_id
+    openstack_identity_service_api_url=<endpoint_url>v
+    openstack_project_id=<project_id>
+    openstack_user_id=<user_id>
     openstack_user_password=$pass
-    openstack_object_store_service_api_url=http://horsemen.i3m.upv.es:8080/v1/AUTH_1e2861bec8174318b8002ac897e21aef
+    openstack_object_store_service_api_url=<objectstore_url>
     openstack_object_store_service_container_name=saps
     openstack_object_store_service_key=1a2b3c4d
     nfs_permanent_storage_path=/nfs
     permanent_storage_base_url=http://<nfsserver_ip>:80/archiver
     submission_rest_server_port=8091
-    admin_email=adminemail@domain
+    admin_email=adminemail@domain.com
     admin_user=admin
     admin_password=admin1234
-    noreply_email=$noreply_email
+    noreply_email=noreply_email@domain.com
     noreply_password=$noreply_password
     saps_temp_storage_path=/var/tmp/nfsaps/
     saps_permanent_storage_type=swift

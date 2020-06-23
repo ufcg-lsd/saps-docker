@@ -8,7 +8,7 @@ data:
     saps_execution_period_garbage_collector=30
     saps_debug_mode=true
     saps_permanent_storage_type=swift
-    datastore_ip=<catalog_ip>
+    datastore_ip=saps-catalog.default.svc.cluster.local
     datastore_port=5432
     datastore_name=saps
     datastore_driver=org.postgresql.Driver
