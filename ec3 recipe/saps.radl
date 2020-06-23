@@ -1,0 +1,102 @@
+description saps (
+    kind = 'component' and
+    short = 'A tool created to provide a dynamic use of SEBAL algorithm' and
+    content = 'A tool created to provide a dynamic use of SEBAL algorithm. Mainly composed by 7 components and deployed as docker containers on top of K8s.
+
+Webpage: https://github.com/ufcg-lsd/saps-engine'
+)
+
+network public (
+    # SAPS web-portal port
+    outports contains '8080/tcp'
+)
+
+configure saps (
+@begin
+  - vars:
+      OPENSTACK_PROJECT_ID: '1gl2861bec8174318b802ac897e21aef'
+      OPENSTACK_USER_ID: '2g42f0a83d2540ec90091db67c633f3d'
+      OPENSTACK_USER_PASSWORD: 'password'
+      OPENSTACK_IDENTITY_SERVICE_API_URL: 'https://server.domain.com:5000'
+      OPENSTACK_OBJECT_STORE_SERVICE_API_URL: 'http://server.domain.com:8080/v1/AUTH_1gl2861bec8174318b802ac897e21aef'
+      OPENSTACK_OBJECT_STORE_SERVICE_KEY: 'passkey'
+
+    tasks:
+    - name: Download saps-docker repo
+      git:
+        repo: 'https://github.com/amcaar/saps-docker.git'
+        dest: /var/tmp/saps
+        recursive: yes
+        force: yes
+        version: master
+
+    - name: Create /nfs folder for NFS 
+      file:
+        path: /nfs
+        state: directory
+        mode: '0755'
+
+    - name: Restart NFS server service
+      service: name=nfs-kernel-server state=restarted
+
+    - name: configure PV YAML file to properly point to the NFS server
+      lineinfile:
+          dest: /var/tmp/saps/nfs-pv.yaml
+          regexp: 'server:'
+          line: "    server: {{ hostvars[groups["front"][0]]["IM_NODE_PRIVATE_IP"] }}"
+          state: present
+
+    - name: create PV for NFS
+      command: kubectl apply -f /var/tmp/saps/nfs-pv.yaml
+
+    - name: Deploy Catalog service
+      command: kubectl apply -f /var/tmp/saps/catalog_deployment.yaml
+
+    - name: configure Archiver YAML file
+      lineinfile:
+          dest: /var/tmp/saps/archiver_deployment.yaml
+          regexp: 'openstack_project_id='
+          line: "    openstack_project_id={{OPENSTACK_PROJECT_ID}}"
+          state: present
+
+    - lineinfile:
+          dest: /var/tmp/saps/archiver_deployment.yaml
+          regexp: 'openstack_user_id='
+          line: "    openstack_user_id={{OPENSTACK_USER_ID}}"
+          state: present
+
+    - lineinfile:
+          dest: /var/tmp/saps/archiver_deployment.yaml
+          regexp: 'openstack_user_password='
+          line: "    openstack_user_password={{OPENSTACK_USER_PASSWORD}}"
+          state: present
+
+    - lineinfile:
+          dest: /var/tmp/saps/archiver_deployment.yaml
+          regexp: 'openstack_identity_service_api_url='
+          line: "    openstack_identity_service_api_url={{OPENSTACK_IDENTITY_SERVICE_API_URL}}"
+          state: present
+
+    - lineinfile:
+          dest: /var/tmp/saps/archiver_deployment.yaml
+          regexp: 'openstack_object_store_service_api_url='
+          line: "    openstack_object_store_service_api_url={{OPENSTACK_OBJECT_STORE_SERVICE_API_URL}}"
+          state: present
+
+    - lineinfile:
+          dest: /var/tmp/saps/archiver_deployment.yaml
+          regexp: 'openstack_object_store_service_key='
+          line: "    openstack_object_store_service_key={{OPENSTACK_OBJECT_STORE_SERVICE_KEY}}"
+          state: present
+
+#    - name: Deploy Archiver service
+#      command: kubectl apply -f /var/tmp/saps/archiver_deployment.yaml
+@end
+)
+
+configure front (
+@begin
+  - tasks:
+    - include: saps.yml
+@end
+)

@@ -23,7 +23,7 @@ data:
     openstack_user_password=<pass>
     openstack_identity_service_api_url=<endpoint_url>
     openstack_object_store_service_api_url=<objectstore_url>
-    openstack_object_store_service_key=1a2b3c4d
+    openstack_object_store_service_key=<objectstore_key>
   log4j.properties: |
     log4j.rootLogger=DEBUG, file, stdout
     log4j.category.org.restlet=INFO

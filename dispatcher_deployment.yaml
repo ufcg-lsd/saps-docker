@@ -19,7 +19,7 @@ data:
     openstack_user_password=$pass
     openstack_object_store_service_api_url=<objectstore_url>
     openstack_object_store_service_container_name=saps
-    openstack_object_store_service_key=1a2b3c4d
+    openstack_object_store_service_key=<objectstore_key>
     nfs_permanent_storage_path=/nfs
     permanent_storage_base_url=http://<nfsserver_ip>:80/archiver
     submission_rest_server_port=8091
