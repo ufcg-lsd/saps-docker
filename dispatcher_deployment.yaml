@@ -13,7 +13,7 @@ data:
     datastore_password=admin
     permanent_storage_tasks_dir=archiver
     permanent_storage_debug_tasks_dir=trash
-    openstack_identity_service_api_url=<endpoint_url>v
+    openstack_identity_service_api_url=<endpoint_url>
     openstack_project_id=<project_id>
     openstack_user_id=<user_id>
     openstack_user_password=$pass
