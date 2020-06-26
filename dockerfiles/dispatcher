@@ -15,8 +15,8 @@ LABEL description="Container image to run the Dispatcher component of SAPS servi
 ENV MAIN_CLASS="org.fogbowcloud.saps.engine.core.dispatcher.SubmissionDispatcherMain"
 
 # Create bind mounts for these three entries
-ENV CONFIG_PATH="/dispatcher/dispatcher.conf"
-ENV LOG_PROPERTIES_PATH="/dispatcher/log4j.properties"
+ENV SERVICE_CONF_PATH="/etc/saps/dispatcher.conf"
+ENV LOG_PROPERTIES_PATH="/etc/saps/log4j.properties"
 ENV TEMP_STORAGE_DIR="/dispatcher/nfs"
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -33,4 +33,4 @@ COPY --from=builder /app/target/lib lib/
 COPY ./resources resources/
 COPY ./scripts  scripts/
 
-ENTRYPOINT java -Dlog4j.configuration=file:"${LOG_PROPERTIES_PATH}" -cp dispatcher.jar:lib/* "${MAIN_CLASS}" "${CONFIG_PATH}"
+ENTRYPOINT java -Dlog4j.configuration=file:"${LOG_PROPERTIES_PATH}" -cp dispatcher.jar:lib/* "${MAIN_CLASS}" "${SERVICE_CONF_PATH}"
