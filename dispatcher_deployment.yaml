@@ -117,7 +117,7 @@ spec:
     image: ufcgsaps/dispatcher
     volumeMounts:
     - name: dispatcherconf-volume
-      mountPath: /dispatcher
+      mountPath: /etc/saps
     - name: executorconf-volume
       mountPath: /dispatcher/resources
     - name: nfs-dispatcher
