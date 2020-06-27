@@ -18,8 +18,8 @@ services:
     networks: 
       - saps-network
     volumes:
-      - ./config/dispatcher.conf:/dispatcher/dispatcher.conf
-      - ./config/log4j.properties:/dispatcher/log4j.properties
+      - ./config/dispatcher.conf:/etc/saps/dispatcher.conf
+      - ./config/log4j.properties:/etc/saps/log4j.properties
       - ./config/execution_script_tags.json:/dispatcher/resources/execution_script_tags.json
       - /nfs:/dispatcher/nfs
   
@@ -28,8 +28,8 @@ services:
     networks: 
       - saps-network
     volumes:
-      - ./config/scheduler.conf:/scheduler/scheduler.conf
-      - ./config/log4j.properties:/scheduler/log4j.properties
+      - ./config/scheduler.conf:/etc/saps/scheduler.conf
+      - ./config/log4j.properties:/etc/saps/log4j.properties
       - ./config/execution_script_tags.json:/scheduler/resources/execution_script_tags.json
     
   archiver:
@@ -37,8 +37,8 @@ services:
     networks:
       - saps-network
     volumes:
-      - ./config/archiver.conf:/archiver/archiver.conf
-      - ./config/log4j.properties:/archiver/log4j.properties
+      - ./config/archiver.conf:/etc/saps/archiver.conf
+      - ./config/log4j.properties:/etc/saps/log4j.properties
       - /nfs:/archiver/nfs
 
 volumes:

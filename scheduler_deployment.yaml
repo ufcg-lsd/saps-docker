@@ -85,7 +85,7 @@ spec:
     image: ufcgsaps/scheduler
     volumeMounts:
     - name: schedulerconf-volume
-      mountPath: /scheduler
+      mountPath: /etc/saps
     - name: executorconf-volume
       mountPath: /scheduler/resources
   volumes:

@@ -64,7 +64,7 @@ spec:
     image: ufcgsaps/archiver
     volumeMounts:
     - name: archiverconf-volume
-      mountPath: /archiver
+      mountPath: /etc/saps
     - name: nfs-archiver
       mountPath: "/archiver/nfs"
   volumes:
