@@ -89,8 +89,71 @@ configure saps (
           line: "    openstack_object_store_service_key={{OPENSTACK_OBJECT_STORE_SERVICE_KEY}}"
           state: present
 
-#    - name: Deploy Archiver service
-#      command: kubectl apply -f /var/tmp/saps/archiver_deployment.yaml
+    - name: Deploy Archiver service
+      command: kubectl apply -f /var/tmp/saps/archiver_deployment.yaml
+
+    # TODO: check the correct IP and port needed here
+    - name: configure Arrebol YAML file to point to K8s service
+      lineinfile:
+          dest: /var/tmp/saps/arrebol_deployment.yaml
+          regexp: '127.0.0.1'
+          line: "                \"http://{{ hostvars[groups["front"][0]]["IM_NODE_PRIVATE_IP"] }}:5555\""
+          state: present
+
+    - name: Deploy Arrebol service
+      command: kubectl apply -f /var/tmp/saps/arrebol_deployment.yaml
+
+    - name: Deploy Scheduler service
+      command: kubectl apply -f /var/tmp/saps/scheduler_deployment.yaml
+
+    - name: configure Dispatcher YAML file
+      lineinfile:
+          dest: /var/tmp/saps/dispatcher_deployment.yaml
+          regexp: 'openstack_project_id='
+          line: "    openstack_project_id={{OPENSTACK_PROJECT_ID}}"
+          state: present
+
+    - lineinfile:
+          dest: /var/tmp/saps/dispatcher_deployment.yaml
+          regexp: 'openstack_identity_service_api_url='
+          line: "    openstack_identity_service_api_url={{OPENSTACK_IDENTITY_SERVICE_API_URL}}"
+          state: present
+
+    - lineinfile:
+          dest: /var/tmp/saps/dispatcher_deployment.yaml
+          regexp: 'openstack_user_id='
+          line: "    openstack_user_id={{OPENSTACK_USER_ID}}"
+          state: present
+
+    - lineinfile:
+          dest: /var/tmp/saps/dispatcher_deployment.yaml
+          regexp: 'openstack_user_password='
+          line: "    openstack_user_password={{OPENSTACK_USER_PASSWORD}}"
+          state: present
+
+    - lineinfile:
+          dest: /var/tmp/saps/dispatcher_deployment.yaml
+          regexp: 'openstack_object_store_service_api_url='
+          line: "    openstack_object_store_service_api_url={{OPENSTACK_OBJECT_STORE_SERVICE_API_URL}}"
+          state: present
+
+    - lineinfile:
+          dest: /var/tmp/saps/dispatcher_deployment.yaml
+          regexp: 'openstack_object_store_service_key='
+          line: "    openstack_object_store_service_key={{OPENSTACK_OBJECT_STORE_SERVICE_KEY}}"
+          state: present
+
+    - lineinfile:
+          dest: /var/tmp/saps/dispatcher_deployment.yaml
+          regexp: 'permanent_storage_base_url='
+          line: "     permanent_storage_base_url=http://{{ hostvars[groups["front"][0]]["IM_NODE_PRIVATE_IP"] }}:80/archiver"
+          state: present
+
+    - name: Deploy Dispatcher service
+      command: kubectl apply -f /var/tmp/saps/dispatcher_deployment.yaml
+
+    - name: Deploy Dashboard service
+      command: kubectl apply -f /var/tmp/saps/dashboard_deployment.yaml
 @end
 )
 

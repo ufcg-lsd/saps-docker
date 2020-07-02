@@ -16,7 +16,7 @@ data:
     openstack_identity_service_api_url=<endpoint_url>
     openstack_project_id=<project_id>
     openstack_user_id=<user_id>
-    openstack_user_password=$pass
+    openstack_user_password=<pass>
     openstack_object_store_service_api_url=<objectstore_url>
     openstack_object_store_service_container_name=saps
     openstack_object_store_service_key=<objectstore_key>
@@ -28,7 +28,7 @@ data:
     admin_password=admin1234
     noreply_email=noreply_email@domain.com
     noreply_password=$noreply_password
-    saps_temp_storage_path=/var/tmp/nfsaps/
+    saps_temp_storage_path=/dispatcher/nfs
     saps_permanent_storage_type=swift
     saps_debug_mode=true
   log4j.properties: |
