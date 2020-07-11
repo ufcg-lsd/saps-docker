@@ -1,3 +1,75 @@
-# TODO
-# Dockerfile: https://github.com/ufcg-lsd/saps-dashboard/blob/feature/dockerfile/docker/dockerfile
-# Endpoint of dispatcher: saps-dispatcher.default.svc.cluster.local
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dashboard-config
+data:
+  # Do not change dashboard port (8081)
+  # Fill in the saps[host] and saps[port] fields with the address of the Dispatcher
+  backend.config: |
+    {
+      "logLevel":"DEBUG",
+      "port":8081,
+      "devMode":true,
+      "saps":{
+          "host":"http://34.66.157.20",
+          "port":8091,
+          "getImagesEndpoint":"/images"
+      },
+      "sattelities":[
+          {
+            "name":"sat4",
+            "sigla":"L4"
+          },
+          {
+            "name":"sat5",
+            "sigla":"L5"
+          },
+          {
+            "name":"sat7",
+            "sigla":"L7"
+          }
+      ]
+      }
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: saps-dashboard
+  labels:
+    app: saps-dashboard
+spec:
+  containers:
+  - name: dashboard
+    image: ufcgsaps/dashboard
+    volumeMounts:
+    - name: execution-config
+      mountPath: /etc/saps
+    - name: dashboard-config
+      mountPath: /dashboard/backend.config
+      subPath: backend.config
+    ports:
+    - containerPort: 80
+  volumes:
+  - name: execution-config
+    configMap:
+      name: executor-config
+  - name: dashboard-config
+    configMap:
+      name: dashboard-config
+      items:
+      - key: backend.config
+        path: backend.config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: saps-dashboard
+spec:
+  type: LoadBalancer
+  selector:
+    app: saps-dashboard
+  ports:
+  - name: dashboard
+    protocol: TCP
+    port: 80
+    targetPort: 80
