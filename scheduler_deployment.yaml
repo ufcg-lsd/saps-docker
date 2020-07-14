@@ -84,14 +84,13 @@ spec:
   - name: scheduler
     image: ufcgsaps/scheduler
     volumeMounts:
-    - name: schedulerconf-volume
+    - name: app-config
       mountPath: /etc/saps
-    - name: executorconf-volume
-      mountPath: /scheduler/resources
   volumes:
-  - name: schedulerconf-volume
-    configMap: 
-      name: scheduler-config
-  - name: executorconf-volume
-    configMap: 
-      name: executor-config
+  - name: app-config
+    projected:
+      sources:
+      - configMap:
+          name: scheduler-config
+      - configMap:
+          name: executor-config
