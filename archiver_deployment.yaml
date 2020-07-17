@@ -14,6 +14,7 @@ data:
     datastore_driver=org.postgresql.Driver
     datastore_username=admin
     datastore_password=admin
+    datastore_url_prefix=jdbc:postgresql://
     saps_temp_storage_path=/archiver/nfs
     permanent_storage_debug_tasks_dir=trash
     permanent_storage_tasks_dir=archiver
