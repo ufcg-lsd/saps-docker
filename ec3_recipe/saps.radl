@@ -32,7 +32,7 @@ configure saps (
 
     - name: configure PV YAML file to properly point to the NFS server
       lineinfile:
-        dest: /var/tmp/saps/nfs-pv.yaml
+        dest: /var/tmp/saps/nfs.yaml
         regexp: 'server:'
         line: "    server: {{ hostvars[groups['front'][0]]['IM_NODE_PRIVATE_IP'] }}"
         state: present

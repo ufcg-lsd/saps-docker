@@ -39,21 +39,6 @@ data:
     log4j.appender.stdout.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n
 ---
 apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: nfs-saps-archiver
-spec:
-  accessModes:
-    - ReadWriteMany
-  selector:
-    matchLabels:
-      name: "nfs"
-  storageClassName: nfs
-  resources:
-    requests:
-      storage: 100Mi
----
-apiVersion: v1
 kind: Pod
 metadata:
   name: saps-archiver
@@ -74,4 +59,4 @@ spec:
       name: archiver-config
   - name: nfs-archiver
     persistentVolumeClaim:
-      claimName: nfs-saps-archiver
+      claimName: nfs-saps

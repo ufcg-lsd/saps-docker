@@ -1,0 +1,42 @@
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: nfs
+provisioner: kubernetes.io/nfs
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs
+  labels:
+    name: nfs
+spec:
+  capacity:
+    storage: 1Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  #persistentVolumeReclaimPolicy: Recycle
+  storageClassName: nfs
+  #mountOptions:
+  #  - hard
+  #  - nfsvers=4.1
+  nfs:
+    server: 127.0.0.1
+      #TODO: consider to deploy NFS server as a pod + service and use DNS: nfs-server.default.svc.cluster.local
+    path: /nfs
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nfs-saps
+spec:
+  accessModes:
+    - ReadWriteMany
+  selector:
+    matchLabels:
+      name: "nfs"
+  storageClassName: nfs
+  resources:
+    requests:
+      storage: 1Gi
