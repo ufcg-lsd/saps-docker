@@ -51,7 +51,7 @@ data:
   POSTGRES_PASSWORD: admin
   POSTGRES_DB: arrebol
 ---
-# Run this command to get the contents of the k8s configuration file
+# Run the command below to get the contents of the k8s configuration file
 # kubectl config view --flatten --minify --raw
 apiVersion: v1
 kind: ConfigMap
