@@ -83,16 +83,16 @@ configure saps (
     - name: Deploy Archiver service
       command: kubectl apply -f /var/tmp/saps/archiver_deployment.yaml
 
-    # TODO: check the correct IP and port needed here
+    # For Arrebol K8s executor version
     - name: configure Arrebol YAML file to point to K8s service
       lineinfile:
-        dest: /var/tmp/saps/arrebol_deployment.yaml
+        dest: /var/tmp/saps/arrebol_deployment_k8s.yaml
         regexp: '127.0.0.1'
-        line: "                \"http://{{ hostvars[groups['front'][0]]['IM_NODE_PRIVATE_IP'] }}:5555\""
+        line: "          \"value\": \"http://{{ hostvars[groups['front'][0]]['IM_NODE_PRIVATE_IP'] }}:8001\""
         state: present
 
     - name: Deploy Arrebol service
-      command: kubectl apply -f /var/tmp/saps/arrebol_deployment.yaml
+      command: kubectl apply -f /var/tmp/saps/arrebol_deployment_k8s.yaml
 
     - name: Deploy Scheduler service
       command: kubectl apply -f /var/tmp/saps/scheduler_deployment.yaml
@@ -143,7 +143,17 @@ configure saps (
     - name: Deploy Dispatcher service
       command: kubectl apply -f /var/tmp/saps/dispatcher_deployment.yaml
 
-    # TODO: Fill in the saps[host] and saps[port] fields with the address of the Dispatcher
+    - name: obtain dispatcher IP
+      shell: kubectl get service saps-dispatcher -o jsonpath='{.spec.clusterIP}'
+      register: dispatcher_ip
+
+    - name: Modify dashboard YAML to add dispatcher IP
+      lineinfile:
+        dest: /var/tmp/saps/dashboard_deployment.yaml
+        regexp: 'http://34.66.157.20'
+        line: "          \"host\":\"http://{{dispatcher_ip.stdout}}\","
+        state: present
+
     - name: Deploy Dashboard service
       command: kubectl apply -f /var/tmp/saps/dashboard_deployment.yaml
 @end
