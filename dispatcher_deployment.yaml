@@ -124,6 +124,7 @@ kind: Service
 metadata:
   name: saps-dispatcher
 spec:
+  type: NodePort
   selector:
     app: saps-dispatcher
   ports:
@@ -131,3 +132,4 @@ spec:
     protocol: TCP
     port: 8091
     targetPort: 8091
+    nodePort: 30010
