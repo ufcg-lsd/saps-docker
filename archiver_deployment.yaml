@@ -59,4 +59,4 @@ spec:
       name: archiver-config
   - name: nfs-archiver
     persistentVolumeClaim:
-      claimName: nfs-saps
+      claimName: nfs

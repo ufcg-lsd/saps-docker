@@ -29,7 +29,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: nfs-saps
+  name: nfs
 spec:
   accessModes:
     - ReadWriteMany

@@ -117,7 +117,7 @@ spec:
           name: executor-config
   - name: nfs-dispatcher
     persistentVolumeClaim:
-      claimName: nfs-saps
+      claimName: nfs
 ---
 apiVersion: v1
 kind: Service
