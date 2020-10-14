@@ -38,7 +38,7 @@ configure saps (
         state: present
 
     - name: create PV for NFS
-      command: kubectl apply -f /var/tmp/saps/nfs-pv.yaml
+      command: kubectl apply -f /var/tmp/saps/nfs.yaml
 
     - name: Deploy Catalog service
       command: kubectl apply -f /var/tmp/saps/catalog_deployment.yaml
