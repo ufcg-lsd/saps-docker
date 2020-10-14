@@ -59,26 +59,7 @@ metadata:
   name: kubeconfig
 data:
   config: |
-    apiVersion: v1
-    clusters:
-    - cluster:
-        certificate-authority-data: 
-        server: 
-      name: 
-    contexts:
-    - context:
-        cluster: 
-        user: 
-      name: 
-    current-context: 
-    kind: 
-    preferences: {}
-    users:
-    - name: 
-      user:
-        client-certificate-data: 
-        client-key-data: 
-        token: 
+kube_config
 ---
 apiVersion: v1
 kind: Pod
