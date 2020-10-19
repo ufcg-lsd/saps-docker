@@ -19,7 +19,7 @@ data:
       "properties": [
         {
           "key":"capacity",
-          "value": 5
+          "value": 20
         },
         {
           "key": "address",
@@ -71,7 +71,7 @@ spec:
   containers:
   # Main container of Arrebol
   - name: arrebol
-    image: ufcglsd/arrebol:k8s.saps
+    image: thiagoyeds/arrebol:k8s.requirements
     volumeMounts:
     - name: arrebolconf-volume
       mountPath: /service/config/

@@ -23,11 +23,11 @@ data:
     nfs_permanent_storage_path=/nfs
     permanent_storage_base_url=http://<nfsserver_ip>:80/archiver
     submission_rest_server_port=8091
-    admin_email=adminemail@domain.com
-    admin_user=admin
-    admin_password=admin1234
-    noreply_email=noreply_email@domain.com
-    noreply_password=$noreply_password
+    admin_email=<ad_email>
+    admin_user=<ad_user>
+    admin_password=<ad_password>
+    noreply_email=<nr_email>
+    noreply_password=<nr_password>
     saps_temp_storage_path=/dispatcher/nfs
     saps_permanent_storage_type=swift
     saps_debug_mode=true
