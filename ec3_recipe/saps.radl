@@ -17,11 +17,11 @@ configure saps (
 @begin
     - name: Download saps-docker repo
       git:
-        repo: 'https://github.com/thiagoyeds/saps-docker.git'
+        repo: 'https://github.com/amcaar/saps-docker.git'
         dest: /var/tmp/saps
         recursive: yes
         force: yes
-        version: nodeport-test
+        version: master
 
     - name: Create /nfs folder for NFS 
       file:
