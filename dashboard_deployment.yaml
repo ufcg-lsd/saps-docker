@@ -65,7 +65,7 @@ kind: Service
 metadata:
   name: saps-dashboard
 spec:
-  type: LoadBalancer
+  type: NodePort
   selector:
     app: saps-dashboard
   ports:
@@ -73,3 +73,4 @@ spec:
     protocol: TCP
     port: 80
     targetPort: 80
+    nodePort: 30020

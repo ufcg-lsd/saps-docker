@@ -19,7 +19,7 @@ data:
       "properties": [
         {
           "key":"capacity",
-          "value": 5
+          "value": 20
         },
         {
           "key": "address",
@@ -59,26 +59,7 @@ metadata:
   name: kubeconfig
 data:
   config: |
-    apiVersion: v1
-    clusters:
-    - cluster:
-        certificate-authority-data: 
-        server: 
-      name: 
-    contexts:
-    - context:
-        cluster: 
-        user: 
-      name: 
-    current-context: 
-    kind: 
-    preferences: {}
-    users:
-    - name: 
-      user:
-        client-certificate-data: 
-        client-key-data: 
-        token: 
+kube_config
 ---
 apiVersion: v1
 kind: Pod
@@ -90,7 +71,7 @@ spec:
   containers:
   # Main container of Arrebol
   - name: arrebol
-    image: ufcglsd/arrebol:k8s.saps
+    image: thiagoyeds/arrebol:k8s.requirements
     volumeMounts:
     - name: arrebolconf-volume
       mountPath: /service/config/

@@ -23,11 +23,11 @@ data:
     nfs_permanent_storage_path=/nfs
     permanent_storage_base_url=http://<nfsserver_ip>:80/archiver
     submission_rest_server_port=8091
-    admin_email=adminemail@domain.com
-    admin_user=admin
-    admin_password=admin1234
-    noreply_email=noreply_email@domain.com
-    noreply_password=$noreply_password
+    admin_email=<ad_email>
+    admin_user=<ad_user>
+    admin_password=<ad_password>
+    noreply_email=<nr_email>
+    noreply_password=<nr_password>
     saps_temp_storage_path=/dispatcher/nfs
     saps_permanent_storage_type=swift
     saps_debug_mode=true
@@ -51,43 +51,57 @@ metadata:
 data:
   execution_script_tags.json: |
     {
-        "processing":[
-          {
-            "name":"ufcg-sebal",
-            "docker_tag":"ufcg-sebal",
-            "docker_repository":"fogbow/worker"
-          },{
-            "name":"sebkc-sebal",
-            "docker_tag":"sebkc-sebal",
-            "docker_repository":"fogbow/worker"
-          },{
-            "name":"sebkc-tseb",
-            "docker_tag":"sebkc-tseb",
-            "docker_repository":"fogbow/worker"
-          }
-        ],
-        "preprocessing":[
-          {
-            "name":"default",
-            "docker_tag":"default",
-            "docker_repository":"fogbow/preprocessor"
-          },{
-            "name":"legacy",
-            "docker_tag":"legacy",
-            "docker_repository":"fogbow/preprocessor"
-          }
-        ],
-        "inputdownloading":[
-          {
-            "name":"usgsapis",
-            "docker_tag":"usgsapis",
-            "docker_repository":"fogbow/inputdownloader"
-          },{
-            "name":"googleapis",
-            "docker_tag":"googleapis",
-            "docker_repository":"fogbow/inputdownloader"
-          }
-        ]
+      "processing":[
+        {
+          "name":"ufcg-sebal",
+          "docker_tag":"ufcg-sebal",
+          "docker_repository":"fogbow/worker",
+          "memory_usage":"12G",
+          "cpu_usage":"1000m"
+        },{
+          "name":"sebkc-sebal",
+          "docker_tag":"sebkc-sebal",
+          "docker_repository":"fogbow/worker",
+          "memory_usage":"12G",
+          "cpu_usage":"1000m"
+        },{
+          "name":"sebkc-tseb",
+          "docker_tag":"sebkc-tseb",
+          "docker_repository":"fogbow/worker",
+          "memory_usage":"12G",
+          "cpu_usage":"1000m"
+        }
+      ],
+      "preprocessing":[
+        {
+          "name":"default",
+          "docker_tag":"default",
+          "docker_repository":"fogbow/preprocessor",
+          "memory_usage":"12G",
+          "cpu_usage":"1000m"
+        },{
+          "name":"legacy",
+          "docker_tag":"legacy",
+          "docker_repository":"fogbow/preprocessor",
+          "memory_usage":"12G",
+          "cpu_usage":"1000m"
+        }
+      ],
+      "inputdownloading":[
+        {
+          "name":"usgsapis",
+          "docker_tag":"usgsapis",
+          "docker_repository":"fogbow/inputdownloader",
+          "memory_usage":"12G",
+          "cpu_usage":"1000m"
+        },{
+          "name":"googleapis",
+          "docker_tag":"googleapis",
+          "docker_repository":"fogbow/inputdownloader",
+          "memory_usage":"12G",
+          "cpu_usage":"1000m"
+        }
+      ]
     }
 ---
 apiVersion: v1
@@ -117,13 +131,14 @@ spec:
           name: executor-config
   - name: nfs-dispatcher
     persistentVolumeClaim:
-      claimName: nfs-saps
+      claimName: nfs
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: saps-dispatcher
 spec:
+  type: NodePort
   selector:
     app: saps-dispatcher
   ports:
@@ -131,3 +146,4 @@ spec:
     protocol: TCP
     port: 8091
     targetPort: 8091
+    nodePort: 30010

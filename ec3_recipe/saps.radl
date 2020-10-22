@@ -8,7 +8,9 @@ Webpage: https://github.com/ufcg-lsd/saps-engine'
 
 network public (
     # SAPS web-portal port
-    outports contains '8080/tcp'
+    outports contains '8080/tcp' and
+    outports contains '30010/tcp' and
+    outports contains '30020/tcp'
 )
 
 configure saps (
@@ -37,7 +39,7 @@ configure saps (
         line: "    server: {{ hostvars[groups['front'][0]]['IM_NODE_PRIVATE_IP'] }}"
         state: present
 
-    - name: create PV for NFS
+    - name: create NFS
       command: kubectl apply -f /var/tmp/saps/nfs.yaml
 
     - name: Deploy Catalog service
@@ -83,12 +85,15 @@ configure saps (
     - name: Deploy Archiver service
       command: kubectl apply -f /var/tmp/saps/archiver_deployment.yaml
 
-    # For Arrebol K8s executor version
+    - name: Obtain kubeconfig
+      shell: echo "$(kubectl config view --minify --raw)" > kubeconfig; sed -i 's/^/    /' kubeconfig; cat kubeconfig
+      register: kube_config
+
     - name: configure Arrebol YAML file to point to K8s service
       lineinfile:
         dest: /var/tmp/saps/arrebol_deployment_k8s.yaml
-        regexp: '127.0.0.1'
-        line: "          \"value\": \"http://{{ hostvars[groups['front'][0]]['IM_NODE_PRIVATE_IP'] }}:8001\""
+        regexp: 'kube_config'
+        line: "{{ kube_config.stdout }}"
         state: present
 
     - name: Deploy Arrebol service
@@ -136,6 +141,36 @@ configure saps (
 
     - lineinfile:
         dest: /var/tmp/saps/dispatcher_deployment.yaml
+        regexp: 'admin_email='
+        line: "    admin_email={{ADMIN_EMAIL}}"
+        state: present
+
+    - lineinfile:
+        dest: /var/tmp/saps/dispatcher_deployment.yaml
+        regexp: 'admin_user='
+        line: "    admin_user={{ADMIN_USER}}"
+        state: present
+
+    - lineinfile:
+        dest: /var/tmp/saps/dispatcher_deployment.yaml
+        regexp: 'admin_password='
+        line: "    admin_password={{ADMIN_PASSWORD}}"
+        state: present
+
+    - lineinfile:
+        dest: /var/tmp/saps/dispatcher_deployment.yaml
+        regexp: 'noreply_email='
+        line: "    noreply_email={{NOREPLY_EMAIL}}"
+        state: present
+
+    - lineinfile:
+        dest: /var/tmp/saps/dispatcher_deployment.yaml
+        regexp: 'noreply_password='
+        line: "    noreply_password={{NOREPLY_PASSWORD}}"
+        state: present
+
+    - lineinfile:
+        dest: /var/tmp/saps/dispatcher_deployment.yaml
         regexp: 'permanent_storage_base_url='
         line: "    permanent_storage_base_url=http://{{ hostvars[groups['front'][0]]['IM_NODE_PRIVATE_IP'] }}:80/archiver"
         state: present
@@ -151,7 +186,14 @@ configure saps (
       lineinfile:
         dest: /var/tmp/saps/dashboard_deployment.yaml
         regexp: 'http://34.66.157.20'
-        line: "          \"host\":\"http://{{dispatcher_ip.stdout}}\","
+        line: "          \"host\":\"http://{{ hostvars[groups['front'][0]]['IM_NODE_PUBLIC_IP'] }}\","
+        state: present
+
+    - name: Modify dashboard YAML to add dispatcher Port
+      lineinfile:
+        dest: /var/tmp/saps/dashboard_deployment.yaml
+        regexp: '8091'
+        line: "          \"port\":\"30010\","
         state: present
 
     - name: Deploy Dashboard service
@@ -163,12 +205,18 @@ configure front (
 @begin
   - vars:
       # Fulfill these variables with the right values in your case
-      OPENSTACK_PROJECT_ID: '1gl2861bec8174318b802ac897e23aef'
-      OPENSTACK_USER_ID: '2g42f0a83d2540ec90091db67c633f4d'
-      OPENSTACK_USER_PASSWORD: 'password'
-      OPENSTACK_IDENTITY_SERVICE_API_URL: 'https://server.domain.com:5000'
-      OPENSTACK_OBJECT_STORE_SERVICE_API_URL: 'http://server.domain.com:8080/v1/AUTH_1gl2861bec8174318b802ac897e21aef'
-      OPENSTACK_OBJECT_STORE_SERVICE_KEY: 'passkey'
+      OPENSTACK_PROJECT_ID: ''
+      OPENSTACK_USER_ID: ''
+      OPENSTACK_USER_PASSWORD: ''
+      OPENSTACK_IDENTITY_SERVICE_API_URL: ''
+      OPENSTACK_OBJECT_STORE_SERVICE_API_URL: ''
+      OPENSTACK_OBJECT_STORE_SERVICE_KEY: ''
+      ADMIN_EMAIL: ''
+      ADMIN_USER: ''
+      ADMIN_PASSWORD: ''
+      NOREPLY_EMAIL: ''
+      NOREPLY_PASSWORD: ''
+      
 
     tasks:
     - include: saps.yml

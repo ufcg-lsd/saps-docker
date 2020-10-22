@@ -1,0 +1,20 @@
+description ubuntu16-openstack-br (
+    kind = 'images' and
+    short = 'Ubuntu 16.04 amn64 on LSD Campina Grande (OpenStack).' and
+    content = 'Ubuntu 16.04 amd64 on LSD Campina Grande (OpenStack).'
+)
+
+# It uses Ubuntu 16
+system front (
+    instance_type = 'lsd.t1.medium' and
+    disk.0.os.name = 'linux' and
+    disk.0.image.url = 'ost://cloud5.lsd.ufcg.edu.br/c052b5e5-c05f-47bd-b96c-6e568871fd72'
+)
+
+# It uses Ubuntu 16
+system wn (
+    instance_type = 'lsd.t2.xlarge' and
+    ec3_max_instances = 5 and # maximum number of working nodes in the cluster
+    disk.0.os.name = 'linux' and
+    disk.0.image.url = 'ost://cloud5.lsd.ufcg.edu.br/c052b5e5-c05f-47bd-b96c-6e568871fd72'
+)

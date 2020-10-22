@@ -12,7 +12,7 @@ metadata:
     name: nfs
 spec:
   capacity:
-    storage: 1Gi
+    storage: 50Gi
   volumeMode: Filesystem
   accessModes:
     - ReadWriteMany
