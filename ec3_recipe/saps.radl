@@ -23,15 +23,6 @@ configure saps (
         force: yes
         version: master
 
-    - name: Create /nfs folder for NFS 
-      file:
-        path: /nfs
-        state: directory
-        mode: '0755'
-
-    - name: Restart NFS server service
-      service: name=nfs-kernel-server state=restarted
-
     - name: configure PV YAML file to properly point to the NFS server
       lineinfile:
         dest: /var/tmp/saps/nfs.yaml
