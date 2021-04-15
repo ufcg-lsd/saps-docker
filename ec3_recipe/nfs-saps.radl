@@ -32,11 +32,19 @@ system front (
 
 configure front (
 @begin
+  - pre_tasks:
+    - name: Create /nfs folder for NFS 
+      file:
+        path: /nfs
+        state: directory
+        mode: '0755'
+
   - roles:
     - { role: 'grycap.nfs', nfs_mode: 'front', nfs_exports: [{path: "/nfs", export: "*(rw,async,no_root_squash,no_subtree_check,insecure)"}] }
 
 @end
 )
+
 
 system wn ( ec3_templates contains 'nfs' )
 configure wn (
