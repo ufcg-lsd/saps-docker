@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: catalog-config
+data:
+  POSTGRES_USER: admin
+  POSTGRES_PASSWORD: admin
+  POSTGRES_DB: saps
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: saps-catalog
+  labels:
+    app: saps-catalog
+spec:
+  containers:
+  - name: catalog
+    image: ufcgsaps/catalog
+    imagePullPolicy: Always
+    envFrom:
+    - configMapRef:
+        name: catalog-config
+    volumeMounts:
+    - mountPath: /var/lib/postgresql/data
+      name: catalog-volume
+    ports:
+    - containerPort: 5432
+  volumes:
+  - name: catalog-volume
+    emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: saps-catalog
+spec:
+  selector:
+    app: saps-catalog
+  ports:
+  - name: postgres
+    protocol: TCP
+    port: 5432
+    targetPort: 5432
