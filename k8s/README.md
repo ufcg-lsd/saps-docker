@@ -22,17 +22,10 @@ sudo service nfs-kernel-server restart
 
 ## Install Kubeadm
 
-You need to install kubeadm and cluster dependencies in all nodes of your cluster.
+You need to install kubeadm and cluster dependencies in all nodes of your cluster. You can do that by executing the `install-k8s.sh` script in each one of them.
 
 ```
-apt-get update && apt-get install -y apt-transport-https
-curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
-cat <<EOF >/etc/apt/sources.list.d/kubernetes.list
-deb http://apt.kubernetes.io/ kubernetes-xenial main
-EOF
-apt-get update
-apt-get install -y docker.io kubelet kubeadm kubectl kubernetes-cni
-apt-get install -y nfs-common
+sudo bash install-k8s.sh
 ```
 
 ## Change cgroup driver
