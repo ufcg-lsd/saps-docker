@@ -100,7 +100,7 @@ The rest of the files are already set up, but you can edit things like the names
 With all the files configured, we can already deploy to the cluster, for that, first create the StorageClass and PersistentVolumeClaim for the Cinder Volume:
 
 ```
-kubectl create -f nfs-pv-pvc.yaml
+kubectl create -f cinder-storage.yaml
 ```
 
 Check if the pvc is bound to a volume with:
