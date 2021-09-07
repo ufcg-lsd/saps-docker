@@ -54,6 +54,7 @@ kubectl get nodes
 ### Install Weave
 
 In order to install Weave, run the following command:
+
 **Note**: The `IPALLOC_RANGE` must be equal to the podSubnet chosen in the `kubeadm-conf.yaml`
 ```
 kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')&env.IPALLOC_RANGE=192.168.0.0/16"
