@@ -30,9 +30,9 @@ sudo systemctl restart docker
 
 ## Setup K8s using OpenStack Cinder
 
-For our cluster, we use (and recommend) Calico as a Network Provider. You can see more details about Calico on this [link](https://docs.projectcalico.org/master/getting-started/kubernetes/quickstart) if you want.
+For our cluster, we use (and recommend) Weave as a Network Provider.
 
-First you need to have a configuration file that points the **cloud-provider** as external. The [kubeadm-conf.yaml](./kubeadm-conf.yaml) is already configured to create the cluster in version 1.22.0 with the Calico podSubnet. Choose your master node, create the `kubeadm-conf.yaml` and run the following commands:
+First you need to have a configuration file that points the **cloud-provider** as external. The [kubeadm-conf.yaml](./kubeadm-conf.yaml) is already configured to create the cluster in version 1.22.1. Choose your master node, create the `kubeadm-conf.yaml` and run the following commands:
 
 ```
 sudo kubeadm init --config kubeadm-conf.yaml
@@ -51,17 +51,17 @@ Verification of the presence of the new node in the cluster:
 kubectl get nodes
 ```
 
-### Install Calico
+### Install Weave
 
-Install the Tigera Calico and custom resource definitions:
+In order to install Weave, run the following command:
+**Note**: The `IPALLOC_RANGE` must be equal to the podSubnet chosen in the `kubeadm-conf.yaml`
 ```
-kubectl create -f https://docs.projectcalico.org/master/manifests/tigera-operator.yaml
-kubectl create -f https://docs.projectcalico.org/master/manifests/custom-resources.yaml
+kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')&env.IPALLOC_RANGE=192.168.0.0/16"
 ```
 
 Wait until each pod has the status of **Running** with the following command:
 ```
-watch kubectl get pods -n calico-system
+watch kubectl get pods -n kube-system
 ```
 
 ## Install CSI Cinder Driver
