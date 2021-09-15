@@ -5,11 +5,47 @@ It is highly recommended that you create a new cluster instead of using the one 
 
 ## Prerequisites
 
-Your cluster must have at least one node with 16GB RAM and a blank disk that can be created via the platform.
+Your cluster must have at least one node with 16GB RAM to run the workers And another one with less than that (e.g 4GB RAM) to run the saps services. You also need a blank disk that can be created via the platform to run the NFS Server.
 
-## Configuration
+### Creating Disk in the Google Cloud
 
-It is necessary to edit the [nfs-server.yaml](./nfs-server.yaml) and change the pdName of your gcePersistentDisk to the name of the blank disk created earlier (By default the name is disk-1).
+- In the Google Cloud Console, access the `Disks` page and click in `Create disk`.
+- Specify the name of your disk, this will be the `$pdName` that will be used to configurate the NFS Server later.
+- Select the Region and Zone of disk, that must be the same region of your VM.
+- In disk type, choose a blank disk.
+
+## Deploy NFS Server
+
+It is necessary to edit the [nfs-server.yaml](./nfs-server.yaml) and change the `pdName` of your gcePersistentDisk to the `$pdName` of the blank disk created earlier.
+
+With the file configured, we can already deploy to the cluster, run the following command:
+
+```
+kubectl apply -f nfs-server.yaml
+```
+
+## Deploy Catalog, Archiver and Dispatcher
+
+The Dispatcher and the Archiver components depend on the Catalog, so deploy the Catalog first with:
+
+```
+kubectl apply -f catalog_deployment.yaml
+```
+
+Wait until the catalog has the status of **Running** with the following command:
+
+```
+watch kubectl get pods
+```
+
+Now, you can deploy the Archiver and Dispatcher:
+
+```
+kubectl apply -f archiver_deployment.yaml -f dispatcher_deployment.yaml 
+```
+
+## Deploy Arrebol and Scheduler
+
 The kubeconfig is the config file with credentials to access the k8s cluster. It will be used by Arrebol. Run the command below to get the contents of the k8s configuration file:
 
 ```
@@ -30,24 +66,22 @@ data:
     kube_config
 ```
 
-The rest of the files are already set up, but you can edit things like the namespace,catalog credentials or component details at your own risk.
-
-## Install
-
-With all the files configured, we can already deploy to the cluster, for that, first deploy the nfs-server:
+Deploy the Arrebol by running the following command:
 
 ```
-kubectl create -f nfs-server.yaml
+kubectl apply -f arrebol_deployment_k8s.yaml
 ```
 
-With the NFS Server running, we can already deploy arrebol and catalog:
+## Deploy Scheduler
+
+The Scheduler component depend on the Arrebol, wait until the Arrebol has the status of **Running** with the following command:
 
 ```
-kubectl create -f arrebol_deployment_k8s.yaml -f catalog_deployment.yaml
+watch kubectl get pods
 ```
 
-With the NFS Server, catalog and arrebol running, it's time to deploy the remaining components:
+Now, you can deploy the Scheduler:
 
 ```
-kubectl create -f archiver_deployment.yaml -f dispatcher_deployment.yaml -f scheduler_deployment.yaml
+kubectl apply -f scheduler_deployment.yaml
 ```
