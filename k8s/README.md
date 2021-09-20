@@ -2,23 +2,7 @@
 
 ## Prerequisites
 
-Your cluster must have at least one node with 16GB RAM and a NFS Server.
-
-## Deploy NFS Server
-
-Install NFS Server dependency:
-
-```
-sudo apt-get install -y nfs-kernel-server
-```
-
-Before starting the NFS daemon, please choose an directory, `$nfs_server_dir_path`, in your machine local file system. The NFS daemon will hold the exported files within this directory. Below commands setup the NFS server:
-
-```
-mkdir -p $nfs_server_dir_path
-echo "$nfs_server_dir_path *(rw,insecure,no_subtree_check,async,no_root_squash)" >> /etc/exports
-sudo service nfs-kernel-server restart
-```
+Your cluster must have at least one node with 16GB RAM to run the workers and another one with less than that (e.g 4GB RAM) to run the saps services, and a NFS Server.
 
 ## Install Kubeadm
 
@@ -65,9 +49,52 @@ Verification of the presence of the new node in the cluster:
 kubectl get nodes
 ```
 
-## Configuration
+## Deploy NFS Server
 
-It is necessary to edit the [nfs-pv-pvc.yaml](./nfs-pv-pvc.yaml) and change the `server` and `path` attributes with the NFS Server IP and `$nfs_server_dir_path` respectively.
+For the NFS Server you can use an external node to export the directory. 
+
+Install NFS Server dependency:
+
+```
+sudo apt-get install -y nfs-kernel-server
+```
+
+Before starting the NFS daemon, please choose an directory, `$nfs_server_dir_path`, in your machine local file system. The NFS daemon will hold the exported files within this directory. Below commands setup the NFS server:
+
+```
+mkdir -p $nfs_server_dir_path
+echo "$nfs_server_dir_path *(rw,insecure,no_subtree_check,async,no_root_squash)" >> /etc/exports
+sudo service nfs-kernel-server restart
+```
+
+Now you can go back to the cluster and create the NFS Persistent Volume Claim. It is necessary to edit the [nfs-pv-pvc.yaml](./nfs-pv-pvc.yaml) and change the `server` and `path` attributes with the NFS Server IP and `$nfs_server_dir_path` respectively, and create the PersistentVolume and PersistentVolumeClaim for the NFS Server:
+
+```
+kubectl apply -f nfs-pv-pvc.yaml
+```
+
+## Deploy Catalog, Archiver and Dispatcher
+
+The Dispatcher and the Archiver components depend on the Catalog, so deploy the Catalog first with:
+
+```
+kubectl apply -f catalog_deployment.yaml
+```
+
+Wait until the catalog has the status of **Running** with the following command:
+
+```
+watch kubectl get pods
+```
+
+Now, you can deploy the Archiver and Dispatcher:
+
+```
+kubectl apply -f archiver_deployment.yaml -f dispatcher_deployment.yaml 
+```
+
+## Deploy Arrebol and Scheduler
+
 The kubeconfig is the config file with credentials to access the k8s cluster. It will be used by Arrebol. Run the command below to get the contents of the k8s configuration file:
 
 ```
@@ -88,24 +115,22 @@ data:
     kube_config
 ```
 
-The rest of the files are already set up, but you can edit things like the namespace,catalog credentials or component details at your own risk.
-
-## Install
-
-With all the files configured, we can already deploy to the cluster, for that, first create the PersistentVolume and PersistentVolumeClaim for the NFS Server:
+Deploy the Arrebol by running the following command:
 
 ```
-kubectl create -f nfs-pv-pvc.yaml
+kubectl apply -f arrebol_deployment_k8s.yaml
 ```
 
-Now, you can already deploy arrebol and catalog:
+## Deploy Scheduler
+
+The Scheduler component depend on the Arrebol, wait until the Arrebol has the status of **Running** with the following command:
 
 ```
-kubectl create -f arrebol_deployment_k8s.yaml -f catalog_deployment.yaml
+watch kubectl get pods
 ```
 
-With the catalog and arrebol running, it's time to deploy the remaining components:
+Now, you can deploy the Scheduler:
 
 ```
-kubectl create -f archiver_deployment.yaml -f dispatcher_deployment.yaml -f scheduler_deployment.yaml
+kubectl apply -f scheduler_deployment.yaml
 ```
