@@ -1,0 +1,127 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: arrebol-config
+data:
+  application.properties: |
+    spring.jpa.database=POSTGRESQL
+    spring.datasource.driverClassName=org.postgresql.Driver
+    spring.datasource.platform=postgres
+    spring.datasource.url=jdbc:postgresql://localhost:5432/arrebol
+    spring.datasource.username=postgres
+    spring.datasource.password=admin
+    spring.jpa.generate-ddl=true
+    spring.jpa.hibernate.ddl-auto=update
+  # The volumeName value is the name of PersistentVolumeClaim used by k8s jobs
+  arrebol.json: |
+    {
+      "poolType":"k8s",
+      "properties": [
+        {
+          "key":"capacity",
+          "value": 20
+        },
+        {
+          "key": "address",
+          "value": "http://127.0.0.1:8001"
+        },{
+          "key": "namespace",
+          "value": "default"
+        },{
+          "key": "volumeName",
+          "value": "nfs"
+        }
+      ]
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pgadmin-config
+data:
+  PGADMIN_DEFAULT_EMAIL: admin@lsd.ufcg.edu.br
+  PGADMIN_DEFAULT_PASSWORD: admin
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+data:
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: admin
+  POSTGRES_DB: arrebol
+---
+# Run the command below to get the contents of the k8s configuration file
+# kubectl config view --flatten --minify --raw
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kubeconfig
+data:
+  config: |
+    kube_config
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: saps-arrebol
+  labels:
+    app: saps-arrebol
+spec:
+  containers:
+  # Main container of Arrebol
+  - name: arrebol
+    image: thiagoyeds/arrebol:k8s.requirements
+    volumeMounts:
+    - name: arrebolconf-volume
+      mountPath: /service/config/
+    ports:
+    - containerPort: 8080
+  # Container for postgres DB
+  - name: postgresql
+    image: postgres
+    envFrom:
+    - configMapRef:
+        name: postgres-config
+    volumeMounts:
+    - mountPath: /var/lib/postgresql/data
+      name: postgres-volume
+    ports:
+    - containerPort: 5432
+  # Container for pgadmin
+  - name: pgadmin
+    image: dpage/pgadmin4
+    envFrom:
+    - configMapRef:
+        name: pgadmin-config
+    ports:
+    - containerPort: 15432
+  - name: sidecar
+    image: ufcgsaps/sidecar-proxy:v1.18.6
+    volumeMounts:
+    - name: kubeconfig
+      mountPath: /root/.kube/
+    ports:
+    - containerPort: 8001
+  volumes:
+  - name: arrebolconf-volume
+    configMap: 
+      name: arrebol-config
+  - name: postgres-volume
+    emptyDir: {}
+  - name: kubeconfig
+    configMap:
+      name: kubeconfig
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: saps-arrebol
+spec:
+  selector:
+    app: saps-arrebol
+  ports:
+  - name: arrebol
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
