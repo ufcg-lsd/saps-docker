@@ -5,7 +5,7 @@ It is highly recommended that you create a new cluster instead of using the one 
 
 ## Prerequisites
 
-Your cluster must have at least one node with 16GB RAM to run the workers And another one with less than that (e.g 4GB RAM) to run the saps services. You also need a blank disk that can be created via the platform to run the NFS Server.
+Your cluster must have at least one node with 16GB RAM to run the workers and another one with less than that (e.g 4GB RAM) to run the saps services. You also need a blank disk that can be created via the platform to run the NFS Server.
 
 ### Creating Disk in the Google Cloud
 
