@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-Your cluster must have at least one node with 16GB RAM.
+Your cluster must have at least one node with 16GB RAM to run the workers and another one with less than that (e.g 4GB RAM) to run the saps services.
 
 ## Install Kubeadm
 
@@ -69,10 +69,43 @@ watch kubectl get pods -n kube-system
 
 Now you need to install the necessary resources for the CSI Cinder Driver to manage the OpenStack Cinder volumes. You can find this more specific tutorial in the [csi-cinder-driver](./csi-cinder-driver) directory.
 
+## Deploy Cinder Storage Class
 
-## Configuration
+It is necessary to edit the [cinder-storage.yaml](./cinder-storage.yaml) and change the **availability** zone and the **storage** space to values ​​consistent with your openstack resources. Your openstack must allow volumes to have the multi-attachment property, and put this type of volume in **type** parameter in the same file. You can find more info about multi-attach volumes at this [link](https://itnext.io/kubernetes-on-devstack-part-3-running-applications-on-the-cluster-f15cf4762822).
 
-It is necessary to edit the [cinder-storage.yaml](./cinder-storage.yaml) and change the **availability** zone and the **storage** space to values ​​consistent with your openstack resources.
+
+Now we can already deploy to the cluster, for that, create the StorageClass and PersistentVolumeClaim for the Cinder Volume with:
+
+```
+kubectl apply -f cinder-storage.yaml
+```
+
+Check if the pvc is bound to a volume with:
+```
+kubectl get pvc
+```
+
+## Deploy Catalog, Archiver and Dispatcher
+
+The Dispatcher and the Archiver components depend on the Catalog, so deploy the Catalog first with:
+
+```
+kubectl apply -f catalog_deployment.yaml
+```
+
+Wait until the catalog has the status of **Running** with the following command:
+
+```
+watch kubectl get pods
+```
+
+Now, you can deploy the Archiver and Dispatcher:
+
+```
+kubectl apply -f archiver_deployment.yaml -f dispatcher_deployment.yaml 
+```
+
+## Deploy Arrebol and Scheduler
 
 The kubeconfig is the config file with credentials to access the k8s cluster. It will be used by Arrebol. Run the command below to get the contents of the k8s configuration file:
 
@@ -94,29 +127,22 @@ data:
     kube_config
 ```
 
-The rest of the files are already set up, but you can edit things like the namespace,catalog credentials or component details at your own risk.
-
-## Install
-
-With all the files configured, we can already deploy to the cluster, for that, first create the StorageClass and PersistentVolumeClaim for the Cinder Volume:
+Deploy the Arrebol by running the following command:
 
 ```
-kubectl create -f cinder-storage.yaml
+kubectl apply -f arrebol_deployment_k8s.yaml
 ```
 
-Check if the pvc is bound to a volume with:
-```
-kubectl get pvc
-```
+## Deploy Scheduler
 
-Now, you can already deploy arrebol and catalog:
+The Scheduler component depend on the Arrebol, wait until the Arrebol has the status of **Running** with the following command:
 
 ```
-kubectl create -f arrebol_deployment_k8s.yaml -f catalog_deployment.yaml
+watch kubectl get pods
 ```
 
-With the catalog and arrebol running, it's time to deploy the remaining components:
+Now, you can deploy the Scheduler:
 
 ```
-kubectl create -f archiver_deployment.yaml -f dispatcher_deployment.yaml -f scheduler_deployment.yaml
+kubectl apply -f scheduler_deployment.yaml
 ```
