@@ -1,0 +1,221 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dispatcher-config
+data:
+  dispatcher.conf: |
+    datastore_url_prefix=jdbc:postgresql://
+    datastore_ip=saps-catalog.default.svc.cluster.local
+    datastore_port=5432
+    datastore_name=saps
+    datastore_driver=org.postgresql.Driver
+    datastore_username=admin
+    datastore_password=admin
+    permanent_storage_tasks_dir=archiver
+    permanent_storage_debug_tasks_dir=trash
+    openstack_identity_service_api_url=<endpoint_url>
+    openstack_project_id=<project_id>
+    openstack_user_id=<user_id>
+    openstack_user_password=<pass>
+    openstack_object_store_service_api_url=<objectstore_url>
+    openstack_object_store_service_container_name=saps
+    openstack_object_store_service_key=<objectstore_key>
+    nfs_permanent_storage_path=/dispatcher/cinder
+    permanent_storage_base_url=http://localhost:80/archiver
+    submission_rest_server_port=8091
+    admin_email=saps@gmail.com
+    admin_user=saps-system
+    admin_password=sapssystem
+    noreply_email=<nr_email>
+    noreply_password=<nr_password>
+    saps_temp_storage_path=/dispatcher/cinder
+    saps_permanent_storage_type=nfs
+    saps_debug_mode=true
+  log4j.properties: |
+    log4j.rootLogger=DEBUG, file, stdout
+    log4j.category.org.restlet=INFO
+    log4j.category.org.apache.http=INFO
+    log4j.appender.DatePattern='.'yyyy-MM-dd
+    log4j.appender.file=org.apache.log4j.DailyRollingFileAppender
+    log4j.appender.file.File=/var/tmp/saps-engine/logs/log4j.log
+    log4j.appender.file.layout=org.apache.log4j.PatternLayout
+    log4j.appender.file.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n
+    log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+    log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+    log4j.appender.stdout.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: executor-config
+data:
+  execution_script_tags.json: |
+    {
+      "processing":[
+        {
+          "name":"ufcg-sebal",
+          "docker_tag":"ufcg-sebal",
+          "docker_repository":"fogbow/worker",
+          "memory_usage":"12G",
+          "cpu_usage":"1000m"
+        },{
+          "name":"sebkc-sebal",
+          "docker_tag":"sebkc-sebal",
+          "docker_repository":"fogbow/worker",
+          "memory_usage":"12G",
+          "cpu_usage":"1000m"
+        },{
+          "name":"sebkc-tseb",
+          "docker_tag":"sebkc-tseb",
+          "docker_repository":"fogbow/worker",
+          "memory_usage":"12G",
+          "cpu_usage":"1000m"
+        },{
+          "name":"nop",
+          "docker_tag":"nop",
+          "docker_repository":"fogbow/worker",
+          "memory_usage":"16G",
+          "cpu_usage":"1000m"
+        },{
+          "name":"nop-fake-files",
+          "docker_tag":"nop-fake-files",
+          "docker_repository":"fogbow/worker",
+          "memory_usage":"16G",
+          "cpu_usage":"1000m"
+        },{
+          "name":"nop-download-files",
+          "docker_tag":"nop-download-files",
+          "docker_repository":"fogbow/worker",
+          "memory_usage":"16G",
+          "cpu_usage":"1000m"
+        },{
+          "name": "endtoend-test",
+          "docker_tag": "endtoend-test",
+          "docker_repository": "fogbow/worker",
+          "memory_usage":"16G",
+          "cpu_usage":"1000m"
+        }
+      ],
+      "preprocessing":[
+        {
+          "name":"default",
+          "docker_tag":"default",
+          "docker_repository":"fogbow/preprocessor",
+          "memory_usage":"12G",
+          "cpu_usage":"1000m"
+        },{
+          "name":"legacy",
+          "docker_tag":"legacy",
+          "docker_repository":"fogbow/preprocessor",
+          "memory_usage":"12G",
+          "cpu_usage":"1000m"
+        },{
+          "name":"nop",
+          "docker_tag":"nop",
+          "docker_repository":"fogbow/preprocessor",
+          "memory_usage":"16G",
+          "cpu_usage":"1000m"
+        },{
+          "name":"nop-fake-files",
+          "docker_tag":"nop-fake-files",
+          "docker_repository":"fogbow/preprocessor",
+          "memory_usage":"16G",
+          "cpu_usage":"1000m"
+        },{
+          "name":"nop-download-files",
+          "docker_tag":"nop-download-files",
+          "docker_repository":"fogbow/preprocessor",
+          "memory_usage":"16G",
+          "cpu_usage":"1000m"
+        },{
+          "name": "endtoend-test",
+          "docker_tag": "endtoend-test",
+          "docker_repository": "fogbow/preprocessor",
+          "memory_usage":"16G",
+          "cpu_usage":"1000m"
+        }
+      ],
+      "inputdownloading":[
+        {
+          "name":"usgsapis",
+          "docker_tag":"usgsapis",
+          "docker_repository":"fogbow/inputdownloader",
+          "memory_usage":"12G",
+          "cpu_usage":"1000m"
+        },{
+          "name":"googleapis",
+          "docker_tag":"googleapis",
+          "docker_repository":"fogbow/inputdownloader",
+          "memory_usage":"12G",
+          "cpu_usage":"1000m"
+        },{
+          "name":"nop",
+          "docker_tag":"nop",
+          "docker_repository":"fogbow/inputdownloader",
+          "memory_usage":"16G",
+          "cpu_usage":"1000m"
+        },{
+          "name":"nop-fake-files",
+          "docker_tag":"nop-fake-files",
+          "docker_repository":"fogbow/inputdownloader",
+          "memory_usage":"16G",
+          "cpu_usage":"1000m"
+        },{
+          "name":"nop-download-files",
+          "docker_tag":"nop-download-files",
+          "docker_repository":"fogbow/inputdownloader",
+          "memory_usage":"16G",
+          "cpu_usage":"1000m"
+        },{
+          "name": "endtoend-test",
+          "docker_tag": "endtoend-test",
+          "docker_repository": "fogbow/inputdownloader",
+          "memory_usage":"16G",
+          "cpu_usage":"1000m"
+        }
+      ]
+    }
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: saps-dispatcher
+  labels:
+    app: saps-dispatcher
+spec:
+  containers:
+  - name: dispatcher
+    image: ufcgsaps/dispatcher
+    volumeMounts:
+    - name: app-config
+      mountPath: /etc/saps
+    - name: cinder-dispatcher
+      mountPath: "/dispatcher/cinder"
+    ports:
+    - containerPort: 8091
+  volumes:
+  - name: app-config
+    projected:
+      sources:
+      - configMap:
+          name: dispatcher-config
+      - configMap:
+          name: executor-config
+  - name: cinder-dispatcher
+    persistentVolumeClaim:
+      claimName: csi-pvc-cinderplugin
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: saps-dispatcher
+spec:
+  type: NodePort
+  selector:
+    app: saps-dispatcher
+  ports:
+  - name: dispatcher
+    protocol: TCP
+    port: 8091
+    targetPort: 8091
+    nodePort: 30010

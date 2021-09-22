@@ -1,0 +1,19 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: csi-sc-cinderplugin
+provisioner: cinder.csi.openstack.org
+parameters:
+  availability: cinderAZ_1
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: csi-pvc-cinderplugin
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+  storageClassName: csi-sc-cinderplugin

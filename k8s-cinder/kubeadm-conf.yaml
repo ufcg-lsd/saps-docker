@@ -1,0 +1,17 @@
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: InitConfiguration
+nodeRegistration:
+  kubeletExtraArgs:
+    cloud-provider: "external"
+---
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: ClusterConfiguration
+kubernetesVersion: "v1.22.1"
+apiServer:
+  extraArgs:
+    cloud-provider: "external"
+controllerManager:
+  extraArgs:
+    cloud-provider: "external"
+networking:
+  podSubnet: "192.168.0.0/16"
