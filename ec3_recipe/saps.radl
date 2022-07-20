@@ -17,7 +17,7 @@ configure saps (
 @begin
     - name: Download saps-docker repo
       git:
-        repo: 'https://github.com/amcaar/saps-docker.git'
+        repo: 'https://github.com/ufcg-lsd/saps-docker.git'
         dest: /var/tmp/saps
         recursive: yes
         force: yes
