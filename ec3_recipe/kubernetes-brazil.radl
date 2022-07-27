@@ -10,13 +10,10 @@ network public (
   # kubernetes ports
   outbound = 'yes' and
   outports contains '6443/tcp' and
-  outports contains '80/tcp' and
-  provider_id = 'public'
+  outports contains '80/tcp'
 )
 
-network private (
-  #provider_id = 'provider'
-)
+network private ()
 
 system front (
   #cpu.count>=2 and
