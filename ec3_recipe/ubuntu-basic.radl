@@ -1,0 +1,21 @@
+description ubuntu-basic (
+    kind = 'images' and
+    short = 'Ubuntu base specification to test SQAaaS.' and
+    content = 'Ubuntu base specification to test SQAaaS at IFCA.'
+)
+
+# It uses the image specified by SQAaaS
+system front (
+    cpu.arch='x86_64' and
+    cpu.count>=1 and
+    memory.size>=4g 
+    disk.0.os.name = 'linux'
+)
+
+system wn (
+    cpu.arch='x86_64' and
+    cpu.count>=1 and
+    memory.size>=4g 
+    disk.0.os.name = 'linux'
+    ec3_max_instances = 5 # maximum number of working nodes in the cluster
+)
