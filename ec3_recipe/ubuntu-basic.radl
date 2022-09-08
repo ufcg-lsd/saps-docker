@@ -8,14 +8,14 @@ description ubuntu-basic (
 system front (
     cpu.arch='x86_64' and
     cpu.count>=1 and
-    memory.size>=4g 
+    memory.size>=4g and
     disk.0.os.name = 'linux'
 )
 
 system wn (
     cpu.arch='x86_64' and
     cpu.count>=1 and
-    memory.size>=4g 
-    disk.0.os.name = 'linux'
+    memory.size>=4g and
+    disk.0.os.name = 'linux' and
     ec3_max_instances = 5 # maximum number of working nodes in the cluster
 )
